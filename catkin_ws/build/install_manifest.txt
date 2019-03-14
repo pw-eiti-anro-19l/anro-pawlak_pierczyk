@@ -1,0 +1,10 @@
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/_setup_util.py
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/env.sh
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/setup.bash
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/setup.sh
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/setup.zsh
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/.rosinstall
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/lib/pkgconfig/beginner_tutorials.pc
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/share/beginner_tutorials/cmake/beginner_tutorialsConfig.cmake
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/share/beginner_tutorials/cmake/beginner_tutorialsConfig-version.cmake
+/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install/share/beginner_tutorials/package.xml

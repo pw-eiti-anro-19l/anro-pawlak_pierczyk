@@ -1,2 +1,0 @@
-beginner_tutorials
--DCATKIN_DEVEL_PREFIX=/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/kpierczyk/anro-pawlak_pierczyk/catkin_ws/install -G Unix Makefiles

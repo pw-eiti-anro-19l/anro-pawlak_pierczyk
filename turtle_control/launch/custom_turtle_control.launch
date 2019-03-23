@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg="turtlesim" name="Lovely_turtle" type="turtlesim_node"/>
+    <node pkg="turtle_control" name="Lovely_urtle_controller" type="turtle_controller"/>
+
+</launch>

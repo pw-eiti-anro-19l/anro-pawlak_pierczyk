@@ -11,8 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  geometry_msgs
-  message_generation
   tf
   urdf
   orocos_kdl
@@ -28,18 +26,15 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
- add_service_files(
-   FILES
-   DhToRPY.srv
- )
+# add_service_files(
+#   FILES
+# )
 
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
-   geometry_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -76,10 +71,6 @@ include_directories(
   ${orocos_kdl_INCLUDE_DIRS}
 )
 
-add_executable(dhtorpy_server src/dhtorpy_server.cpp)
-target_link_libraries(dhtorpy_server ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
-add_dependencies(dhtorpy_server manipulator_description_generate_messages_cpp)
-
-add_executable(getrpy src/getrpy.cpp)
-target_link_libraries(getrpy ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
-add_dependencies(getrpy manipulator_description_generate_messages_cpp)
+add_executable(dh2urdf src/dh2urdf.cpp)
+target_link_libraries(dh2urdf ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
+add_dependencies(dh2urdf manipulator_description_generate_messages_cpp)

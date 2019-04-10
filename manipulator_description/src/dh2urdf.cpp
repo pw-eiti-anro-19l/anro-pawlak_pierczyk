@@ -66,7 +66,7 @@ int main(int argc, char **argv)
                       << pos.y() << " "
                       << pos.z() << std::endl;
     if(i == 3)
-      urdf << "  len: " << 0 << std::endl;
+      urdf << "  len: " << 0.2 << std::endl;
 
   }
   urdf.close();

@@ -16,7 +16,6 @@ bool dhtorpy(manipulator_description::DhToRPY::Request  &req,
   for(int i = 0; i < req.linknum; i++)
   {
     Frame frame = Frame::DH(req.ai_1[i], req.alhi_1[i], req.di[i], req.fii[i]);
-    frame = frame.Inverse();
 
     Rotation rot = frame.M;
     Vector position = frame.p;
@@ -27,15 +26,9 @@ bool dhtorpy(manipulator_description::DhToRPY::Request  &req,
     res.pitch.push_back(pitch);
     res.yaw.push_back(yaw);
     
-    std::cout << res.roll[i] << " ";
-    std::cout << res.pitch[i] << " ";
-    std::cout << res.yaw[i] << std::endl;
-
-    geometry_msgs::Point point;
-    point.x = position.x();
-    point.y = position.y();
-    point.z = position.z();
-    res.position.push_back(point);
+    res.x.push_back(position.x());
+    res.y.push_back(position.y());
+    res.z.push_back(position.z());
   }
 
   return true;
@@ -43,11 +36,10 @@ bool dhtorpy(manipulator_description::DhToRPY::Request  &req,
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "dh_to_rpy_server");
+  ros::init(argc, argv, "dhtorpy_server");
   ros::NodeHandle n;
 
-  ros::ServiceServer service = n.advertiseService("dh_to_rpy", dhtorpy);
-  ROS_INFO("Ready to add two ints.");
+  ros::ServiceServer service = n.advertiseService("dhtorpy", dhtorpy);
   ros::spin();
 
   return 0;

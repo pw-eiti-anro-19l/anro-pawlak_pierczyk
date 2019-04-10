@@ -1,5 +1,3 @@
-Header Header
-
 #number of links
 uint32 linknum
 
@@ -9,9 +7,10 @@ float64[] di
 float64[] alhi_1
 float64[] fii
 ---
-
 #RPY angles
 float64[] roll
 float64[] pitch
 float64[] yaw
-geometry_msgs/Point[] position
+float64[] x
+float64[] y
+float64[] z

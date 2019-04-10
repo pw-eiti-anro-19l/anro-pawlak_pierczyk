@@ -76,10 +76,10 @@ include_directories(
   ${orocos_kdl_INCLUDE_DIRS}
 )
 
-add_executable(dh_to_rpy_server src/dh_to_rpy_server.cpp)
-target_link_libraries(dh_to_rpy_server ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
-add_dependencies(dh_to_rpy_server manipulator_description_generate_messages_cpp)
+add_executable(dhtorpy_server src/dhtorpy_server.cpp)
+target_link_libraries(dhtorpy_server ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
+add_dependencies(dhtorpy_server manipulator_description_generate_messages_cpp)
 
-add_executable(dh_to_rpy_client src/dh_to_rpy_client.cpp)
-target_link_libraries(dh_to_rpy_client ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
-add_dependencies(dh_to_rpy_client manipulator_description_generate_messages_cpp)
+add_executable(getrpy src/getrpy.cpp)
+target_link_libraries(getrpy ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
+add_dependencies(getrpy manipulator_description_generate_messages_cpp)

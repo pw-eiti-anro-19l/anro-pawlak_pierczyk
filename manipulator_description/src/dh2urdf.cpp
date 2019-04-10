@@ -1,79 +1,75 @@
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <vector>
 #include "ros/ros.h"
 #include "kdl/frames.hpp"
-
-using namespace KDL;
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "dhtorpy_server");
   ros::NodeHandle n;
 
-  const int fieldsize = 5; //width of the print field
-  int linknum; //number of links
-  std::vector<double> rpy(3); //result rpy vector
-  std::vector<double> xyz(3); //result translation vector
-
-  //get links number
-  if(n.hasParam("linknum")){
-    n.getParam("linknum", linknum);
+  if (argc != 2)
+  {
+    ROS_INFO("Point path to the 'manipulator_description' folder!");
+    return 1;
   }
-  else linknum = 0;
+  std::string path(argv[1]);
 
   //map of links dh parameters
   std::map<std::string, std::vector<double>> links;
-  for(int i = 1; i <= linknum; i++){
+  for(int i = 1; i <= 3; i++){
     //vector of the link dh parameters
     std::vector<double> link;
-    if(n.hasParam("i" + std::to_string(i))){
-      n.getParam("i" + std::to_string(i), link);
+    if(!n.getParam("i" + std::to_string(i), link)){
+      std::string INFO = "No i"  + std::to_string(i) + "link on the server.";
+      ROS_INFO(INFO.c_str());
+      return 1;
     }
-    else{
-      link.insert(link.cend(), {0, 0, 0, 0});
-    }
-    
     //add link to map
     links["i" + std::to_string(i)] = link;
   }
 
+  //open file with ardf params
+  std::ofstream urdf;
+  urdf.open(path + "/param/urdfparam.yaml");
+
+
+  std::vector<double> length;
+  std::vector<double> rpy(3);
+
   //calculate joints position and orientation and print to cout
-  std::cout << std::endl << std::endl << std::endl;
-  for(int i = 1; i <= linknum; i++)
+  for(int i = 1; i <= 3; i++)
   {
     //get joint's matrix
-    Frame frame = Frame::DH(links["i" + std::to_string(i)].at(0),
-                            links["i" + std::to_string(i)].at(1),
-                            links["i" + std::to_string(i)].at(2),
-                            links["i" + std::to_string(i)].at(3));
+    KDL::Frame RotX = KDL::Frame(KDL::Rotation::RotX(links["i" + std::to_string(i)].at(1)));
+    KDL::Frame TranX = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(0), 0, 0));
+    KDL::Frame RotZ = KDL::Frame(KDL::Rotation::RotZ(links["i" + std::to_string(i)].at(3)));
+    KDL::Frame TranZ = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(2), 0, 0));
+    KDL::Frame frame = RotX * TranX * RotZ * TranZ;
 
     //get rotation in RPY
-    Rotation rot = frame.M;
-    //get position
-    Vector pos = frame.p;
-
-    //save RPY and pos to result vectors
+    KDL::Rotation rot = frame.M;
     rot.GetRPY(rpy.at(0), rpy.at(1), rpy.at(2));
-    pos.x(xyz.at(0));
-    pos.y(xyz.at(1));
-    pos.z(xyz.at(2));
+    //get position
+    KDL::Vector pos = frame.p;
 
+    //write to file .yaml
+    if(i > 1)
+      urdf << "  len: " << links["i" + std::to_string(i)].at(0) << std::endl;  
+    urdf << "i" + std::to_string(i) + ":" << std::endl;
+    urdf << "  rpy: " << rpy.at(0) << " "
+                      << rpy.at(1) << " "
+                      << rpy.at(2) << std::endl;
+    urdf << "  xyz: " << pos.x() << " "
+                      << pos.y() << " "
+                      << pos.z() << std::endl;
+    if(i == 3)
+      urdf << "  len: " << 0 << std::endl;
 
-    //print results
-    std::cout.precision(3);
-    std::cout << "joint " + std::to_string(i) + ":" << std::endl;
-    std::cout << "   -rpy: " << std::setw(fieldsize) << rpy.at(0)
-                                  << std::setw(fieldsize) << rpy.at(1)
-                                  << std::setw(fieldsize) << rpy.at(2)
-                                  << std::endl;
-    std::cout << "   -xyz: " << std::setw(fieldsize) << xyz.at(0)
-                                  << std::setw(fieldsize) << xyz.at(1)
-                                  << std::setw(fieldsize) << xyz.at(2)
-                                  << std::endl;
-    std::cout << std::endl;
   }
-  std::cout << std::endl << std::endl << std::endl;
+  urdf.close();
 
   return 0;
 }

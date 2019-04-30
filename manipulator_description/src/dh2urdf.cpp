@@ -19,14 +19,18 @@ int main(int argc, char **argv)
 
   //map of links dh parameters
   std::map<std::string, std::vector<double>> links;
+
   for(int i = 1; i <= 3; i++){
+
     //vector of the link dh parameters
     std::vector<double> link;
+    
     if(!n.getParam("i" + std::to_string(i), link)){
       std::string INFO = "No i"  + std::to_string(i) + "link on the server.";
       ROS_INFO(INFO.c_str());
       return 1;
     }
+
     //add link to map
     links["i" + std::to_string(i)] = link;
   }
@@ -35,8 +39,6 @@ int main(int argc, char **argv)
   std::ofstream urdf;
   urdf.open(path + "/param/urdfparam.yaml");
 
-
-  std::vector<double> length;
   std::vector<double> rpy(3);
 
   //calculate joints position and orientation and print to cout

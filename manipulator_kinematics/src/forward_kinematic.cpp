@@ -27,7 +27,7 @@ int main(int argc, char** argv){
     /*   Initialization   */
     /**********************/
 
-    ros::init(argc, argv, "simple_kinematic");
+    ros::init(argc, argv, "forward_kinematic");
     ros::NodeHandle node;
 
     ros::Subscriber sub = node.subscribe("joint_states", 100, &calculate_kinematic);
@@ -63,8 +63,8 @@ int main(int argc, char** argv){
 
     /*<----------------------------------------------------------------->*/
     /*<-- BUG - when initial calculations are ommited the node won't  -->*/
-    /*<-- publish any messages to /tf node what results in lack of    -->*/
-    /*<-- desired 'simple_kinematic' frame in the rviz.               -->*/
+    /*<-- publish any messages to /tf topic what results in lack of    -->*/
+    /*<-- desired 'forward_kinematic' frame in the rviz.               -->*/
     /*<----------------------------------------------------------------->*/
 
     tf::TransformBroadcaster tf_broad;
@@ -96,7 +96,7 @@ int main(int argc, char** argv){
     end_position.M.GetQuaternion(x, y, z, w);
     end.setRotation(tf::Quaternion(x, y, z, w));
 
-    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "simple_kinematic"));
+    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
 
 
 
@@ -147,6 +147,6 @@ void calculate_kinematic(const sensor_msgs::JointState& msg){
     end_position.M.GetQuaternion(x, y, z, w);
     end.setRotation(tf::Quaternion(x, y, z, w));
 
-    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "simple_kinematic"));
+    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
 
 }

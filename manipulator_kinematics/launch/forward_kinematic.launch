@@ -8,6 +8,6 @@
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
     <node name="rviz" pkg="rviz" type="rviz" args="-f link_basea" required="true"/>
 
-    <node name="simple_kinematic" pkg="manipulator_kinematics" type="simple_kinematic"/>
-    <node name="simple_kinematic_kdl" pkg="manipulator_kinematics" type="simple_kinematic_kdl"/>
+    <node name="forward_kinematic" pkg="manipulator_kinematics" type="forward_kinematic"/>
+    <node name="forward_kinematic_kdl" pkg="manipulator_kinematics" type="forward_kinematic_kdl"/>
 </launch>

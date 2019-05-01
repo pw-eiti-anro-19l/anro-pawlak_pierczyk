@@ -76,6 +76,10 @@ include_directories(
   ${orocos_kdl_INCLUDE_DIRS}
 )
 
-add_executable(simple_kinematic src/simple_kinematic.cpp)
-target_link_libraries(simple_kinematic ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
-add_dependencies(simple_kinematic manipulator_description_generate_messages_cpp)
+add_executable(forward_kinematic src/forward_kinematic.cpp)
+target_link_libraries(forward_kinematic ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
+add_dependencies(forward_kinematic manipulator_description_generate_messages_cpp)
+
+add_executable(forward_kinematic_kdl src/forward_kinematic_kdl.cpp)
+target_link_libraries(forward_kinematic_kdl ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
+add_dependencies(forward_kinematic_kdl manipulator_description_generate_messages_cpp)

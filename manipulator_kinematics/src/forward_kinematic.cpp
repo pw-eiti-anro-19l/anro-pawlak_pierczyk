@@ -6,18 +6,12 @@
 #include "kdl/frames.hpp"
 #include "sensor_msgs/JointState.h"
 
-
-
 void calculate_kinematic(const sensor_msgs::JointState&);
-
-
 
 //map of links dh parameters
 std::map<std::string, std::vector<double>> links;
 //position of the end in KDL::Frame object
 KDL::Frame end_position;
-
-
 
 int main(int argc, char** argv){
   
@@ -58,43 +52,17 @@ int main(int argc, char** argv){
 
 
     /******************************/
-    /* Calculate initial position */   
+    /*  Public initial position   */   
     /******************************/
 
     /*<----------------------------------------------------------------->*/
-    /*<-- BUG - when initial calculations are ommited the node won't  -->*/
-    /*<-- publish any messages to /tf topic what results in lack of    -->*/
-    /*<-- desired 'forward_kinematic' frame in the rviz.               -->*/
+    /*<-- BUG - when initial tf post is ommited the node won't        -->*/
+    /*<-- publish any messages to /tf topic what results in lack of   -->*/
+    /*<-- desired 'forward_kinematic' frame in the rviz.              -->*/
     /*<----------------------------------------------------------------->*/
 
     tf::TransformBroadcaster tf_broad;
     tf::Transform end;
-
-    //vector of frames representing link's position in previous link's frame of reference
-    std::vector<KDL::Frame> reference_frames;
-
-    for(int i = 1; i <= 3; i++)
-    {
-        //get link's reference frame
-        KDL::Frame RotX = KDL::Frame(KDL::Rotation::RotX(links["i" + std::to_string(i)].at(1)));
-        KDL::Frame TranX = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(0), 0, 0));
-        KDL::Frame RotZ = KDL::Frame(KDL::Rotation::RotZ(links["i" + std::to_string(i)].at(3)));
-        KDL::Frame TranZ = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(2), 0, 0));
-        KDL::Frame frame = RotX * TranX * RotZ * TranZ;
-
-        reference_frames.push_back(frame); 
-    }
-
-    //initial end position in KDL::Frame
-    end_position = reference_frames.at(0)*reference_frames.at(1)*reference_frames.at(2);
-    
-    //transform KDL::Frame position to tf::Transform
-    end.setOrigin(tf::Vector3(end_position.p.x(), end_position.p.y(), end_position.p.z()));
-
-    //transform KDL::Frame rotation to tf::Transform
-    double x, y, z, w;
-    end_position.M.GetQuaternion(x, y, z, w);
-    end.setRotation(tf::Quaternion(x, y, z, w));
 
     tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
 
@@ -112,8 +80,9 @@ int main(int argc, char** argv){
 
 void calculate_kinematic(const sensor_msgs::JointState& msg){
 
-    tf::TransformBroadcaster tf_broad;
-    tf::Transform end;
+    /*************************/
+    /*  Calculate position   */   
+    /*************************/
 
     //get positions of the link
     links["i1"].at(3) = msg.position.at(0);
@@ -126,11 +95,10 @@ void calculate_kinematic(const sensor_msgs::JointState& msg){
     for(int i = 1; i <= 3; i++)
     {   
         //get link's reference frame
-        KDL::Frame RotX = KDL::Frame(KDL::Rotation::RotX(links["i" + std::to_string(i)].at(1)));
-        KDL::Frame TranX = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(0), 0, 0));
-        KDL::Frame RotZ = KDL::Frame(KDL::Rotation::RotZ(links["i" + std::to_string(i)].at(3)));
-        KDL::Frame TranZ = KDL::Frame(KDL::Vector(links["i" + std::to_string(i)].at(2), 0, 0));
-        KDL::Frame frame = RotX * TranX * RotZ * TranZ;
+        KDL::Frame frame = KDL::Frame::DH_Craig1989(links["i" + std::to_string(i)].at(0),
+                                                    links["i" + std::to_string(i)].at(1),
+                                                    links["i" + std::to_string(i)].at(2),
+                                                    links["i" + std::to_string(i)].at(3));
 
         //store reference frame
         reference_frames.push_back(frame);
@@ -139,6 +107,15 @@ void calculate_kinematic(const sensor_msgs::JointState& msg){
     //initial end position in KDL::Frame
     end_position = reference_frames.at(0)*reference_frames.at(1)*reference_frames.at(2);
     
+    
+    /***********************/
+    /*  Public  position   */   
+    /***********************/
+
+    //tf's tools required to publish end position to the /tf topic
+    tf::TransformBroadcaster tf_broad;
+    tf::Transform end;
+
     //transform KDL::Frame position to tf::Transform
     end.setOrigin(tf::Vector3(end_position.p.x(), end_position.p.y(), end_position.p.z()));
 
@@ -147,6 +124,7 @@ void calculate_kinematic(const sensor_msgs::JointState& msg){
     end_position.M.GetQuaternion(x, y, z, w);
     end.setRotation(tf::Quaternion(x, y, z, w));
 
+    //send end position to /tf topic
     tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
 
 }

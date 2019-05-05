@@ -8,6 +8,9 @@
 
 void calculate_kinematic(const sensor_msgs::JointState&);
 
+//publisher used to publish results to rviz
+ros::Publisher pub;
+
 //map of links dh parameters
 std::map<std::string, std::vector<double>> links;
 //position of the end in KDL::Frame object
@@ -25,6 +28,7 @@ int main(int argc, char** argv){
     ros::NodeHandle node;
 
     ros::Subscriber sub = node.subscribe("joint_states", 100, &calculate_kinematic);
+    pub = node.advertise<geometry_msgs::PoseStamped>("forward_kinematic", 10);
 
 
 
@@ -48,25 +52,6 @@ int main(int argc, char** argv){
         //add link to map
         links["i" + std::to_string(i)] = link;
     }
-
-
-
-    /******************************/
-    /*  Public initial position   */   
-    /******************************/
-
-    /*<----------------------------------------------------------------->*/
-    /*<-- BUG - when initial tf post is ommited the node won't        -->*/
-    /*<-- publish any messages to /tf topic what results in lack of   -->*/
-    /*<-- desired 'forward_kinematic' frame in the rviz.              -->*/
-    /*<----------------------------------------------------------------->*/
-
-    tf::TransformBroadcaster tf_broad;
-    tf::Transform end;
-
-    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
-
-
 
     /************/
     /*   Spin   */
@@ -112,19 +97,37 @@ void calculate_kinematic(const sensor_msgs::JointState& msg){
     /*  Public  position   */   
     /***********************/
 
-    //tf's tools required to publish end position to the /tf topic
-    tf::TransformBroadcaster tf_broad;
-    tf::Transform end;
+    geometry_msgs::PoseStamped pose;
 
-    //transform KDL::Frame position to tf::Transform
-    end.setOrigin(tf::Vector3(end_position.p.x(), end_position.p.y(), end_position.p.z()));
+    //basic info about the frame
+    pose.header.stamp = ros::Time::now();
+    pose.header.frame_id = "link_baseb";
 
-    //transform KDL::Frame rotation to tf::Transform
+    //position
+    pose.pose.position.x = end_position.p.x();
+    pose.pose.position.y = end_position.p.y();
+    pose.pose.position.z = end_position.p.z();
+
+    //get quaternion
     double x, y, z, w;
     end_position.M.GetQuaternion(x, y, z, w);
-    end.setRotation(tf::Quaternion(x, y, z, w));
+    //orientation
+    pose.pose.orientation.x = x;
+    pose.pose.orientation.y = y;
+    pose.pose.orientation.z = z;
+    pose.pose.orientation.w = w;
 
-    //send end position to /tf topic
-    tf_broad.sendTransform(tf::StampedTransform(end, ros::Time::now(), "link_baseb", "forward_kinematic"));
 
+    while (pub.getNumSubscribers() < 1)
+    {
+        if (!ros::ok())
+        {
+            return;
+        }
+
+        ROS_WARN_ONCE("Please create a subscriber /forward_kinematic_kdl!");
+        sleep(1);
+    }
+
+    pub.publish(pose);
 }

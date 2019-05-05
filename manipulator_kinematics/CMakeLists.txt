@@ -10,6 +10,7 @@ project(manipulator_kinematics)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
+  geometry_msgs
   tf
   urdf
   orocos_kdl
@@ -59,6 +60,7 @@ catkin_package(
   CATKIN_DEPENDS 
   roscpp
   sensor_msgs
+  geometry_msgs
   message_runtime
   tf
   urdf

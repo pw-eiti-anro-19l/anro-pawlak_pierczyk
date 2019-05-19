@@ -1,0 +1,5 @@
+string interpolation_type                   # linear or cubic
+manipulator_interpolation/frame_pose pose   # frame's pposes
+manipulator_interpolation/frame_vel vel     # frame's velocities
+float32 duration                            # duration of the movement
+---

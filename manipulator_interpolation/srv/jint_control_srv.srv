@@ -1,7 +1,0 @@
-string interpolation_type   # linear or trapeze
-float32[3] initial_angles   # angles' final values
-float32[3] final_angles     # angles' final values
-float32[3] initial_velocity # velocities' initial values
-float32[3] final_velocity   # velocities' final values
-float32 duration            # duration of the movement
----
